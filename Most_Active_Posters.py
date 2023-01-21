@@ -40,3 +40,5 @@ for post in filteredPosts:
 sortedDict = dict(sorted(dictionary.items(), key=lambda item: len(item[1]), reverse=True))
 for key in sortedDict:
     print(f"{key.name}: {len(dictionary[key])} posts")
+    
+input()
