@@ -26,12 +26,14 @@ for post in posts:
 #Keeps track of how many posts each user made within the specified range
 #Creates a list for each user
 dictionary = {}
+flairsText = []
 flairs = []
 for flair in subreddit.flair.templates:
-    flairs.append(flair['text'])
+    flairsText.append(flair['text'])
+    flairs.append(flair)
 
 for post in filteredPosts:
-    if post.author_flair_text not in flairs:
+    if post.author_flair_text not in flairsText:
         dictionary[post.author] = []
 
 #Uses list to keep track of all user's posts
@@ -54,6 +56,6 @@ for key in sortedDict:
     else:
         break
         
-subreddit.submit(title="Top Posters Of The Week",selftext=topposters)
+subreddit.submit(title="Top Posters Of The Week",selftext=topposters,flair_id=flairs[13]['id'])
 
 exit()
