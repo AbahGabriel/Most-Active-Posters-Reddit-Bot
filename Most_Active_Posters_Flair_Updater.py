@@ -54,6 +54,4 @@ for key in sortedDict:
     else:
         break
 
-reddit.subreddit("test").submit(title="Top Posters Of The Week: ", selftext=topposters)
-
-input()
+exit()
