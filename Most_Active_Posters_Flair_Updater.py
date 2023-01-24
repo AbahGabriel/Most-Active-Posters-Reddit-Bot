@@ -53,5 +53,7 @@ for key in sortedDict:
             continue
     else:
         break
+        
+subreddit.submit(title="Top Posters Of The Week",selftext=topposters)
 
 exit()
