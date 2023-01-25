@@ -115,7 +115,7 @@ sortedDict = dict(sorted(dictionary.items(), key=lambda item: len(item[1]), reve
 topposters = ""
 num = 1
 for key in sortedDict:
-    while num <= 5:
+    if num <= 5:
         try:
             try:
                 #Sets flairs of corresponding users
@@ -137,10 +137,11 @@ for key in sortedDict:
                 num += 1
         except AttributeError:
             print("Invalid user. Skipping.")
-            continue
+    else:
+        break
     
 if len(linkFlairs) != 0:
-    subreddit.submit(title="Top Posters Of The Week",selftext=topposters,flair_id=linkFlairs[13]['id'])
+    subreddit.submit(title="Top Posters Of The Week",selftext=topposters,flair_id=linkFlairs[0]['id'])
 else:
     subreddit.submit(title="Top Posters Of The Week",selftext=topposters)
 
