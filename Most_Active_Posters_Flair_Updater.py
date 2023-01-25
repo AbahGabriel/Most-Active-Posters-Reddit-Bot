@@ -27,15 +27,19 @@ for post in posts:
 
 #Keeps track of how many posts each user made within the specified range
 dictionary = {}
+
+#Tries to filter out users with flairs
 try:
-    #Tries to filter out users with flairs
     flairsText = []
     flairs = []
     linkFlairs = []
+
+    #Retrieves all user flairs
     for flair in subreddit.flair.templates:
         flairsText.append(flair['text'])
         flairs.append(flair)
 
+    #Retrieves all post flairs
     for flair in subreddit.flair.link_templates:
         linkFlairs.append(flair)
 
@@ -48,8 +52,10 @@ try:
         for key in dictionary:
             if (post.author == key):
                 dictionary[key].append(post)
+
+#Default approach where all users are considered
 except Forbidden:
-    #Default approach where all users are considered
+    
     for post in filteredPosts:
         dictionary[post.author] = []
 
@@ -136,7 +142,7 @@ for key in sortedDict:
         break
         
 if len(linkFlairs) != 0:
-    subreddit.submit(title="Top Posters Of The Week",selftext=topposters,flair_id=linkFlairs[0]['id'])
+    subreddit.submit(title="Top Posters Of The Week",selftext=topposters,flair_id=linkFlairs[13]['id'])
 else:
     subreddit.submit(title="Top Posters Of The Week",selftext=topposters)
 
