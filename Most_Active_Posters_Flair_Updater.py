@@ -135,7 +135,7 @@ for key in sortedDict:
     else:
         break
         
-if len(flairs) != 0:
+if len(linkFlairs) != 0:
     subreddit.submit(title="Top Posters Of The Week",selftext=topposters,flair_id=linkFlairs[0]['id'])
 else:
     subreddit.submit(title="Top Posters Of The Week",selftext=topposters)
