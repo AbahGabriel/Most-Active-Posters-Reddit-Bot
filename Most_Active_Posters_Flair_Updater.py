@@ -2,9 +2,10 @@ import praw
 from prawcore.exceptions import Forbidden
 import datetime
 import os
+import re
 
-#Connects to Reddit's API and creates a Reddit object
-#which allows me to perform various actions
+#  Connects to Reddit's API and creates a Reddit object
+#  which allows me to perform various actions
 reddit = praw.Reddit('MostActivePosters')
 
 #Gets info
@@ -15,7 +16,7 @@ subreddit = reddit.subreddit(subreddit_name)
 
 #Retrieves all new posts from subreddit
 posts = subreddit.new()
-timeRange = datetime.timedelta(days=7) #Sets a time range of specified days
+timeRange = datetime.timedelta(days=7)
 filteredPosts = []
 for post in posts:
     #Checks if post was created between the current time and the specified range
@@ -55,7 +56,7 @@ try:
 
 #Default approach where all users are considered
 except Forbidden:
-    
+
     for post in filteredPosts:
         dictionary[post.author] = []
 
@@ -65,41 +66,37 @@ except Forbidden:
             if (post.author == key):
                 dictionary[key].append(post)
 
-#Deletes flairs from previous week posters, along with the flairs themselves
+#Deletes flairs from previous week
 filename = "C:\\Users\\Gabriel\\source\\repos\\API_Practice\\Top_Posters_Bot\\topposters.txt"
-names = []
-ids = []
+redditors = []
+flairs = []
 if os.path.exists(filename) == True:
-    with open(filename) as f:
-        if len(f.readlines()) < 5:
-            open(filename, "w").truncate(0)
+    with open(filename, 'r') as f:
+        if "," in f:
+            for line in f:
+                line = line.split(',')
+                flairs.append(line[1])
+
+            for flair in flairs:
+                subreddit.flair.templates.delete(flair['id'])
         else:
-            if "," in f:
-                for line in f:
-                    line = line.split(',')
-                    names.append(line[0])
-                    ids.append(line[1])
+            for line in f:
+                subreddit.flair.delete(line)
 
-                for name in names:
-                    subreddit.flair.delete(name)
-
-                for flairId in ids:
-                    subreddit.flair.templates.delete(flairId)
-            else:
-                for line in f:
-                    subreddit.flair.delete(line)
-
-            #Clears file
-            open(filename, "w").truncate(0)
+        #Clears file
+        open(filename, "w").truncate(0)
 else:
     #Creates file
-    open(filename, "x").close()
+    open(filename, "w").close()
+
 
 #Creates weekly flairs
 newFlairs = []
 try:
     for i in range(1, 6):
-        subreddit.flair.templates.add(text=f'#{i} Poster for Week {str(datetime.datetime.today())[:29]}',
+        text = f'#{i} Poster for Week {datetime.datetime.today()}'
+        text = re.sub("\..*$","",text)
+        subreddit.flair.templates.add(text=text,
         allowable_content='text',
         mod_only=True,
         text_editable=False)
@@ -118,32 +115,51 @@ sortedDict = dict(sorted(dictionary.items(), key=lambda item: len(item[1]), reve
 topposters = ""
 num = 1
 for key in sortedDict:
-    if num <= 5:
+    while num <= 5:
         try:
             try:
                 #Sets flairs of corresponding users
                 if len(newFlairs) != 0:
-                    subreddit.flair.set(f"{key.name}", text=f'#{i} Poster for Week {str(datetime.datetime.today())[:29]}',flair_template_id=newFlairs[num]['id'])
+                    text = f'#{i} Poster for Week {datetime.datetime.today()}'
+                    text = re.sub("\..*$","",text)
+                    subreddit.flair.set(f"{key.name}", text=text,flair_template_id=newFlairs[num]['id'])
             except Forbidden:
                 print("Bot does not have authority to set flairs.")
-            topposters += f"{num}. {key.name}: {len(dictionary[key])} posts\n\n"
 
+            topposters += f"{num}. {key.name}: {len(dictionary[key])} posts\n\n"
             #Stores names and ids in file to be deleted in the next week
             with open(filename, 'a') as f:
                 if len(newFlairs) != 0:
-                    f.write(f"{key.name},{newFlairs[num]['id']}\n")
+                    f.write(f"{key},{newFlairs[num]}\n")
                 else:
-                    f.write(f"{key.name}\n")
+                    f.write(f"{key}\n")
 
-            num += 1
+                num += 1
         except AttributeError:
+            print("Invalid user. Skipping.")
             continue
-    else:
-        break
-        
+    
 if len(linkFlairs) != 0:
     subreddit.submit(title="Top Posters Of The Week",selftext=topposters,flair_id=linkFlairs[13]['id'])
 else:
     subreddit.submit(title="Top Posters Of The Week",selftext=topposters)
+
+""" subreddit = reddit.subreddit("RandomTest123")
+
+ Deletes flairs based on id
+for flair in subreddit.flair.templates:
+    subreddit.flair.templates.delete(flair['id'])
+
+    for flair in flairs:
+                subreddit.flair.templates.delete(flair['id'])
+
+ Removes flair from user
+for post in subreddit.new():
+    redditor = post.author
+    subreddit.flair.delete(redditor)
+
+for flair in subreddit.flair.templates:
+    print(flair['text']) """
+
 
 exit()
