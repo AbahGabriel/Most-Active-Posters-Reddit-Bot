@@ -8,7 +8,7 @@ import re
 #Ensure that this bot is a moderator, or it won't work
 def main():
     #File path
-    path = "C:\\Users\\Gabriel\\source\\repos\\API_Practice\\TestTopPosters\\test.txt"
+    path = "C:\\Users\\Gabriel\\source\\repos\\API_Practice\\TestTopPosters\\flairs.txt"
 
     #Go to subreddit
     reddit = praw.Reddit('MostActivePosters')
