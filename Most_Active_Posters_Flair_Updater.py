@@ -64,6 +64,7 @@ def getPostsMadeWithinPastWeek(subreddit):
 def setPostNumberForEachAuthor(lastWeekPosts):
     dictionary = {}
 
+    print("Getting posts from past week...")
     #Counts number of posts for each author
     for post in lastWeekPosts:
         if post.author in dictionary:
@@ -72,6 +73,29 @@ def setPostNumberForEachAuthor(lastWeekPosts):
             dictionary[post.author] = 1
     
     return dictionary
+
+def deletePreviousFlairs(subreddit, reddit, path, authorsAndPosts):
+    if not os.path.exists(path) or os.stat(path).st_size == 0:
+        return
+    
+    print("Deleting flairs from past week...")
+    #Clears user flairs
+    userList = []
+    for author in authorsAndPosts:
+        userList.append(author)
+    deleteUserFlairs(userList, subreddit)
+
+    #Deletes flairs from subreddit
+    with open(path, 'r') as file_in:
+        for line in file_in: #Each line is a flair
+            subreddit.flair.templates.delete(line[158:194])
+
+    #Clears file
+    with open(path, 'r+') as file_in:
+        file_in.truncate(0)
+           
+def deleteUserFlairs(userList, subreddit):
+    subreddit.flair.update(userList, text='')
 
 def removeFlairedAuthors(authorDictionary, lastWeekPosts):
     #Check if any author currently has a flair
@@ -85,6 +109,7 @@ def removeFlairedAuthors(authorDictionary, lastWeekPosts):
     return authorDictionary
     
 def sortDictionaryInDescendingOrder(dictionary):
+    print("Sorting users based on post count...")
     #Sorts dictionary according to the values (x[1])
     dictionary = sorted(dictionary.items(), key=lambda x: x[1], reverse=True)
     return dictionary
@@ -98,6 +123,7 @@ def keepTopFivePosters(authorsAndPosts):
     return topFivePosters
 
 def createNewFlairs(subreddit):
+    print("Creating new flairs...")
     #Creates five new flairs that can only be assigned by moderators
     for i in range(1, 6):
         text = f'#{i} Poster for Week {datetime.datetime.today()}'
@@ -117,6 +143,7 @@ def createNewFlairs(subreddit):
     return newFlairs
 
 def setUserFlairs(authorsAndPosts, createdFlairs, subreddit):
+    print("Setting flairs...")
     #Sets flairs for top 5 posters, in order
     i = 0
     for author in authorsAndPosts:
@@ -133,27 +160,5 @@ def saveNewFlairs(path, createdFlairs):
     for flair in createdFlairs:
         with open(path, 'a') as openFile:
             openFile.write(f'{flair}\n')
-
-def deletePreviousFlairs(subreddit, reddit, path, authorsAndPosts):
-    if not os.path.exists(path) or os.stat(path).st_size == 0:
-        return
-    
-    #Clears user flairs
-    userList = []
-    for author in authorsAndPosts:
-        userList.append(author)
-    deleteUserFlairs(userList, subreddit)
-
-    #Deletes flairs from subreddit
-    with open(path, 'r') as file_in:
-        for line in file_in: #Each line is a flair
-            subreddit.flair.templates.delete(line[158:194])
-
-    #Clears file
-    with open(path, 'r+') as file_in:
-        file_in.truncate(0)
-           
-def deleteUserFlairs(userList, subreddit):
-    subreddit.flair.update(userList, text='')
 
 main()
