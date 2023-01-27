@@ -6,4 +6,5 @@ Displays all users in a subreddit that posted within a period of time, in the or
 - Install the PRAW package ```pip install praw```
 - Create a Reddit (script) app at https://www.reddit.com/prefs/apps/ and get your keys
 - Edit the praw.ini file with your details
-- Run the script ```python Most_Active_Posters.py```
+- Open the python file and change the ```subreddit_name``` value to your desired subreddit
+- Run the script ```python Most_Active_Posters.py``` or ```python Most_Active_Posters_Flair_Updater.py```, based on whichever fulfils your requirements
