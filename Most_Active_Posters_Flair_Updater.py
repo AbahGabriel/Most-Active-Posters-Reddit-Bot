@@ -1,4 +1,5 @@
 import praw
+import prawcore
 import datetime
 import os
 import re
@@ -13,18 +14,20 @@ def main():
 
     #Go to subreddit
     reddit = praw.Reddit('MostActivePosters')
-    subreddit_name = 'test'
+    subreddit_name = 'babesfrom1996'
     subreddit = reddit.subreddit(subreddit_name)
+
+    #Deletes flairs used for previous week
+    deletePreviousFlairs(subreddit, reddit, path)
     
     #Retrieve all posts made within the past week
     lastWeekPosts = getPostsMadeWithinPastWeek(subreddit)
 
+    #Removes flairs from previous week's flair awardees
+    clearFlairsFromPreviousHolders(subreddit)
+
     #Get author of each post and assign them a numberOfPosts value
     authorsAndPosts = setPostNumberForEachAuthor(lastWeekPosts)
-
-    #Deletes flairs used for previous week
-    #Had to place it here to allow it to accept authorsAndPosts as an argument
-    deletePreviousFlairs(subreddit, reddit, path, authorsAndPosts)
 
     #Filter out authors who currently have flairs
     authorsAndPosts = removeFlairedAuthors(authorsAndPosts, lastWeekPosts)
@@ -36,7 +39,6 @@ def main():
     authorsAndPosts = keepTopNPosters(authorsAndPosts)
 
     #Create five new flairs labelled: "#{num} Poster for Week {currentDay}"
-    #Note - Account must be a moderator for this part
     createdFlairs = createNewFlairs(subreddit)
 
     #Sets user flairs
@@ -44,6 +46,25 @@ def main():
 
     #Saves the newly created flairs
     saveNewFlairs(path, createdFlairs)
+
+def deletePreviousFlairs(subreddit, reddit, path):
+    if not os.path.exists(path) or os.stat(path).st_size == 0:
+        return
+    
+    print("Deleting flairs from past week...")
+    #Deletes flairs from subreddit
+    with open(path, 'r') as openFile:
+        for line in openFile: #Each line is a flair
+            start = line.find("id") + 4  # + 4 to account for the 'id': prefix
+            end = line.find(",", start) # Finds the next ',' from the given index
+            flairId = line[start:end] # Gets the text in the index region
+            flairId = flairId.strip().strip('\'') # Formats it to return the id
+
+            subreddit.flair.templates.delete(flairId)
+
+    #Clears file
+    with open(path, 'r+') as openFile:
+        openFile.truncate(0)
 
 def getPostsMadeWithinPastWeek(subreddit):
     #All new posts in the subreddit
@@ -61,6 +82,15 @@ def getPostsMadeWithinPastWeek(subreddit):
 
     return filteredPosts
 
+def clearFlairsFromPreviousHolders(subreddit):
+    userList = []
+
+    for flair in subreddit.flair.templates:
+        if "Poster for Week" in flair['text']:
+            userList.append(flair['user'])
+
+    subreddit.flair.update(userList, text='')
+
 def setPostNumberForEachAuthor(lastWeekPosts):
     dictionary = {}
 
@@ -73,29 +103,6 @@ def setPostNumberForEachAuthor(lastWeekPosts):
             dictionary[post.author] = 1
     
     return dictionary
-
-def deletePreviousFlairs(subreddit, reddit, path, authorsAndPosts):
-    if not os.path.exists(path) or os.stat(path).st_size == 0:
-        return
-    
-    print("Deleting flairs from past week...")
-    #Clears user flairs
-    userList = []
-    for author in authorsAndPosts:
-        userList.append(author)
-    deleteUserFlairs(userList, subreddit)
-
-    #Deletes flairs from subreddit
-    with open(path, 'r') as openFile:
-        for line in openFile: #Each line is a flair
-            subreddit.flair.templates.delete(line[158:194]) #This represents the flair id of each flair as a string
-
-    #Clears file
-    with open(path, 'r+') as openFile:
-        openFile.truncate(0)
-           
-def deleteUserFlairs(userList, subreddit):
-    subreddit.flair.update(userList, text='')
 
 def removeFlairedAuthors(authorDictionary, lastWeekPosts):
     #Check if any author currently has a flair
@@ -127,7 +134,7 @@ def createNewFlairs(subreddit):
     print("Creating new flairs...")
     #Creates five new flairs that can only be assigned by moderators
     for i in range(1, 6):
-        text = f'#{i} Poster for Week {datetime.datetime.today()}'
+        text = f'#{i} Poster for Week {datetime.date.today()}'
         text = re.sub("\..*$","",text)
         subreddit.flair.templates.add(text=text,
         allowable_content='text',
@@ -150,9 +157,8 @@ def setUserFlairs(authorsAndPosts, createdFlairs, subreddit):
     for author in authorsAndPosts:
         if i > 5:
             break
-        text = f'#{i+1} Poster for Week {datetime.date.today()}'
-        text = re.sub("\..*$","",text)
-        subreddit.flair.set(author, text=text,flair_template_id=createdFlairs[i]['id'])
+        subreddit.flair.set(author, text=createdFlairs[i]['text'],flair_template_id=createdFlairs[i]['id'])
+        i += 1
 
 def saveNewFlairs(path, createdFlairs):
     if not os.path.exists(path):
