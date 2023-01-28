@@ -9,7 +9,7 @@ import re
 #post frequency during the week.
 def main():
     #File path
-    path = "test.txt"
+    path = "flairs.txt"
 
     #Go to subreddit
     reddit = praw.Reddit('MostActivePosters')
