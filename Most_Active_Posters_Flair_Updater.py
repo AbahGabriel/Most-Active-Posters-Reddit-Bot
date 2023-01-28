@@ -14,7 +14,7 @@ def main():
 
     #Go to subreddit
     reddit = praw.Reddit('MostActivePosters')
-    subreddit_name = 'babesfrom1996'
+    subreddit_name = 'AnotherTest1234'
     subreddit = reddit.subreddit(subreddit_name)
 
     #Deletes flairs used for previous week
@@ -70,7 +70,7 @@ def getPostsMadeWithinPastWeek(subreddit):
     #All new posts in the subreddit
     allNewPosts = subreddit.new()
 
-    timeRange = datetime.timedelta(days=7)
+    timeRange = datetime.timedelta(weeks=1)
     filteredPosts = []
     for post in allNewPosts:
         #Checks if post was created between the current time and the past week
@@ -97,17 +97,18 @@ def setPostNumberForEachAuthor(lastWeekPosts):
     print("Getting posts from past week...")
     #Counts number of posts for each author
     for post in lastWeekPosts:
-        if post.author in dictionary:
-            dictionary[post.author] += 1
-        else:
-            dictionary[post.author] = 1
+        if post.author is not None:
+            if post.author in dictionary:
+                dictionary[post.author] += 1
+            else:
+                dictionary[post.author] = 1
     
     return dictionary
 
 def removeFlairedAuthors(authorDictionary, lastWeekPosts):
     #Check if any author currently has a flair
     for post in lastWeekPosts:
-        if post.author_flair_text != (None or ''):
+        if post.author_flair_text is not (None or ''):
             try:
                 del authorDictionary[post.author] #Remove if yes
             except KeyError: #Handles duplicate posters
