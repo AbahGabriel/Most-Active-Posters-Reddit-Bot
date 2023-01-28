@@ -1,18 +1,19 @@
 import praw
-import itertools
 import datetime
-import prawcore.exceptions
 import os
 import re
 
-#Ensure that this bot is a moderator, or it won't work
+#Ensure that this bot is a moderator, or else it won't work
+
+#Grabs Top N Posters of the Week and awards them the flair '#{num} Poster for Week {week}' based on their
+#post frequency during the week.
 def main():
     #File path
-    path = "flairs.txt"
+    path = "test.txt"
 
     #Go to subreddit
     reddit = praw.Reddit('MostActivePosters')
-    subreddit_name = 'babesfrom1996'
+    subreddit_name = 'test'
     subreddit = reddit.subreddit(subreddit_name)
     
     #Retrieve all posts made within the past week
@@ -31,8 +32,8 @@ def main():
     #Sorts dictionary in descending order
     authorsAndPosts = sortDictionaryInDescendingOrder(authorsAndPosts)
 
-    #Keeps top 5 Users
-    authorsAndPosts = keepTopFivePosters(authorsAndPosts)
+    #Keeps top N Users
+    authorsAndPosts = keepTopNPosters(authorsAndPosts)
 
     #Create five new flairs labelled: "#{num} Poster for Week {currentDay}"
     #Note - Account must be a moderator for this part
@@ -48,7 +49,6 @@ def getPostsMadeWithinPastWeek(subreddit):
     #All new posts in the subreddit
     allNewPosts = subreddit.new()
 
-    #Posts within past week
     timeRange = datetime.timedelta(days=7)
     filteredPosts = []
     for post in allNewPosts:
@@ -86,13 +86,13 @@ def deletePreviousFlairs(subreddit, reddit, path, authorsAndPosts):
     deleteUserFlairs(userList, subreddit)
 
     #Deletes flairs from subreddit
-    with open(path, 'r') as file_in:
-        for line in file_in: #Each line is a flair
-            subreddit.flair.templates.delete(line[158:194])
+    with open(path, 'r') as openFile:
+        for line in openFile: #Each line is a flair
+            subreddit.flair.templates.delete(line[158:194]) #This represents the flair id of each flair as a string
 
     #Clears file
-    with open(path, 'r+') as file_in:
-        file_in.truncate(0)
+    with open(path, 'r+') as openFile:
+        openFile.truncate(0)
            
 def deleteUserFlairs(userList, subreddit):
     subreddit.flair.update(userList, text='')
@@ -114,13 +114,14 @@ def sortDictionaryInDescendingOrder(dictionary):
     dictionary = sorted(dictionary.items(), key=lambda x: x[1], reverse=True)
     return dictionary
 
-def keepTopFivePosters(authorsAndPosts):
+def keepTopNPosters(authorsAndPosts):
+    N = 5
     # Converts dict to tuple
     # Get first N items in dictionary
     authorTuple = tuple(authorsAndPosts)
-    topFivePosters = dict(list(authorTuple)[0: 5]) 
+    topNPosters = dict(list(authorTuple)[0: N]) 
 
-    return topFivePosters
+    return topNPosters
 
 def createNewFlairs(subreddit):
     print("Creating new flairs...")
@@ -149,9 +150,9 @@ def setUserFlairs(authorsAndPosts, createdFlairs, subreddit):
     for author in authorsAndPosts:
         if i > 5:
             break
-        text = f'#{i+1} Poster for Week {datetime.datetime.today()}'
-        text = re.sub("\..*$","",text),
-        subreddit.flair.set(author.name, text=text,flair_template_id=createdFlairs[i]['id'])
+        text = f'#{i+1} Poster for Week {datetime.date.today()}'
+        text = re.sub("\..*$","",text)
+        subreddit.flair.set(author, text=text,flair_template_id=createdFlairs[i]['id'])
 
 def saveNewFlairs(path, createdFlairs):
     if not os.path.exists(path):
