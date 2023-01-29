@@ -17,14 +17,14 @@ def main():
     subreddit_name = 'babesfrom1996'
     subreddit = reddit.subreddit(subreddit_name)
 
+    #Removes flairs from previous week's flair awardees
+    clearFlairsFromPreviousHolders(subreddit)
+
     #Deletes flairs used for previous week
     deletePreviousFlairs(subreddit, reddit, path)
     
     #Retrieve all posts made within the past week
     lastWeekPosts = getPostsMadeWithinPastWeek(subreddit)
-
-    #Removes flairs from previous week's flair awardees
-    clearFlairsFromPreviousHolders(subreddit)
 
     #Get author of each post and assign them a numberOfPosts value
     authorsAndPosts = setPostNumberForEachAuthor(lastWeekPosts)
@@ -46,6 +46,15 @@ def main():
 
     #Saves the newly created flairs
     saveNewFlairs(path, createdFlairs)
+
+def clearFlairsFromPreviousHolders(subreddit):
+    userList = []
+
+    for flair in subreddit.flair(limit=None):
+        if "Poster for Week" in flair['flair_text']:
+            userList.append(flair['user'])
+
+    subreddit.flair.update(userList)
 
 def deletePreviousFlairs(subreddit, reddit, path):
     if not os.path.exists(path) or os.stat(path).st_size == 0:
@@ -82,15 +91,6 @@ def getPostsMadeWithinPastWeek(subreddit):
 
     return filteredPosts
 
-def clearFlairsFromPreviousHolders(subreddit):
-    userList = []
-
-    for flair in subreddit.flair.templates:
-        if "Poster for Week" in flair['text']:
-            userList.append(flair['user'])
-
-    subreddit.flair.update(userList, text='')
-
 def setPostNumberForEachAuthor(lastWeekPosts):
     dictionary = {}
 
@@ -108,12 +108,15 @@ def setPostNumberForEachAuthor(lastWeekPosts):
 def removeFlairedAuthors(authorDictionary, lastWeekPosts):
     #Check if any author currently has a flair
     for post in lastWeekPosts:
-        if post.author_flair_text is not (None or ''):
+        if post.author_flair_text == '':
+            continue
+
+        if post.author_flair_text is not None:
             try:
                 del authorDictionary[post.author] #Remove if yes
             except KeyError: #Handles duplicate posters
                 continue
-    
+        
     return authorDictionary
     
 def sortDictionaryInDescendingOrder(dictionary):
