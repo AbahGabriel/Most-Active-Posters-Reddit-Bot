@@ -69,7 +69,10 @@ def deletePreviousFlairs(subreddit, reddit, path):
             flairId = line[start:end] # Gets the text in the index region
             flairId = flairId.strip().strip('\'') # Formats it to return the id
 
-            subreddit.flair.templates.delete(flairId)
+            try:
+                subreddit.flair.templates.delete(flairId)
+            except prawcore.exceptions.NotFound:
+                continue
 
     #Clears file
     with open(path, 'r+') as openFile:
