@@ -139,8 +139,9 @@ def keepTopNPosters(authorsAndPosts):
 
 def createNewFlairs(subreddit):
     print("Creating new flairs...")
-    #Creates five new flairs that can only be assigned by moderators
-    for i in range(1, 6):
+    #Creates N new flairs that can only be assigned by moderators
+    N = 5
+    for i in range(1, N + 1):
         text = f'#{i} Poster for Week {datetime.date.today()}'
         text = re.sub("\..*$","",text)
         subreddit.flair.templates.add(text=text,
