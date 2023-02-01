@@ -129,10 +129,12 @@ def sortDictionaryInDescendingOrder(dictionary):
     return dictionary
 
 def keepTopNPosters(authorsAndPosts):
-    N = 5
+    N = 5 #Number of users to consider
+    
     # Converts dict to tuple
-    # Get first N items in dictionary
     authorTuple = tuple(authorsAndPosts)
+    
+    # Get first N items in dictionary
     topNPosters = dict(list(authorTuple)[0: N]) 
 
     return topNPosters
