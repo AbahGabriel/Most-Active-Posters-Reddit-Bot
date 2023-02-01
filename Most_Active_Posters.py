@@ -8,7 +8,7 @@ import os
 def main():
     #Go to subreddit
     reddit = praw.Reddit('MostActivePosters')
-    subreddit_name = ''
+    subreddit_name = 'test'
     subreddit = reddit.subreddit(subreddit_name)
     
     #Retrieve all posts made within the past week
@@ -70,7 +70,7 @@ def keepTopNPosters(authorsAndPosts):
     return topNPosters
 
 def sendPMToMod(authorsAndPosts, reddit, subreddit_name):
-    modName = ""
+    modName = "ARandomBoiIsMe"
 
     #Constructs subject content
     subject = f"r/{subreddit_name}: Top Posters Of The Week"
