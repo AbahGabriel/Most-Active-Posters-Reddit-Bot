@@ -2,7 +2,7 @@
 Retrieves the most active users in a subreddit within a period of time.
 
 ## Most_Active_Posters.py
-This script gets the most active users and send their names as a PM to a specified user.  
+This script gets the most active users and sends their names as a PM to a specified user.  
 The account that runs this script does not have to be a moderator in the subreddit.
 
 ## Most_Active_Posters_Flair_Updater.py
