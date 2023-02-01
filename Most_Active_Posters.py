@@ -8,7 +8,7 @@ import os
 def main():
     #Go to subreddit
     reddit = praw.Reddit('MostActivePosters')
-    subreddit_name = 'babesfrom1996'
+    subreddit_name = 'test'
     subreddit = reddit.subreddit(subreddit_name)
     
     #Retrieve all posts made within the past week
