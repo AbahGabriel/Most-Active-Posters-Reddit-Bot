@@ -73,7 +73,7 @@ def keepTopNPosters(authorsAndPosts):
     return topNPosters
 
 def sendPMToMod(authorsAndPosts, reddit, subreddit_name):
-    modName = "ARandomBoiIsMe"
+    userName = "ARandomBoiIsMe"
 
     #Constructs subject content
     subject = f"r/{subreddit_name}: Top Posters Of The Week"
@@ -85,6 +85,6 @@ def sendPMToMod(authorsAndPosts, reddit, subreddit_name):
         message += f"{i}. {author}: {authorsAndPosts[author]} posts\n"
         i += 1
     
-    reddit.redditor(modName).message(subject=subject, message=message)
+    reddit.redditor(userName).message(subject=subject, message=message)
 
 main()
