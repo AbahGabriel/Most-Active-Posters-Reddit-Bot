@@ -16,7 +16,7 @@ The account that runs this script must be a moderator in the subreddit, and must
 - Edit the praw.ini file with your details
 - For the Most_Active_Posters.py file:
   - Open the python file and change the ```subreddit_name``` value to your desired subreddit.
-  - Change the ```modName``` value to the user who is to receive the PM with the names.
+  - Change the ```userName``` value to the user who is to receive the PM with the names.
 - For the Most_Active_Posters_Flair_Updater.py file:
   - Open the python file and change the ```subreddit_name``` value to your desired subreddit.
 - Run the script ```python Most_Active_Posters.py``` or ```python Most_Active_Posters_Flair_Updater.py```, based on whichever fulfils your requirements
