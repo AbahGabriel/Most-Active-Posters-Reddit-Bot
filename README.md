@@ -13,6 +13,7 @@ The account that runs this script must be a moderator in the subreddit, and must
 - Ensure you have Python installed on your system. You can download it here https://www.python.org/downloads/.
 - Install the PRAW package ```pip install praw```.
 - Create a Reddit (script) app at https://www.reddit.com/prefs/apps/ and get your keys.
+- Store the python script and the praw.ini file in the same folder.
 - Edit the praw.ini file with your details.
 - For the Most_Active_Posters.py file:
   - Open the python file and change the ```subreddit_name``` value to your desired subreddit.
