@@ -14,7 +14,7 @@ def main():
 
     #Go to subreddit
     reddit = praw.Reddit('MostActivePosters')
-    subreddit_name = 'CelebsInJeanShorts'
+    subreddit_name = 'test'
     subreddit = reddit.subreddit(subreddit_name)
 
     #Removes flairs from previous week's flair awardees
