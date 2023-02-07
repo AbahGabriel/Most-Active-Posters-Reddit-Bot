@@ -19,4 +19,5 @@ The account that runs this script must be a moderator in the subreddit, and must
   - Change the ```userName``` value to the user who is to receive the PM with the names.
 - For the Most_Active_Posters_Flair_Updater.py file:
   - Open the python file and change the ```subreddit_name``` value to your desired subreddit.
-- Run the script ```python Most_Active_Posters.py``` or ```python Most_Active_Posters_Flair_Updater.py```, based on whichever fulfils your requirements
+- Schedule a task to run the script ```Most_Active_Posters.py``` or ```Most_Active_Posters_Flair_Updater.py```, based on whichever fulfils your requirements
+  - How to schedule a task: https://youtu.be/4n2fC97MNac
