@@ -38,7 +38,7 @@ def main():
     #Keeps top N Users
     authorsAndPosts = keepTopNPosters(authorsAndPosts)
 
-    #Create five new flairs labelled: "#{num} Poster for Week {currentDay}"
+    #Create N new flairs labelled: "#{num} Poster for Week {currentDay}"
     createdFlairs = createNewFlairs(subreddit)
 
     #Sets user flairs
